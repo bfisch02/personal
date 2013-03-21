@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+<link rel="stylesheet" href="program.css">
+<link href="program.js">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<script>
+doneClicked=false;
+$(document).ready(function(){
+	$("#yesButton").click(function(){
+  		$(this).hide();
+   		$("#NAO").hide();
+   		$('#scrollBox').css('visibility','visible');
+   		$('#timelineLabel').css('visibility','visible');
+   		$('#bottom').css('visibility', 'visible');
+   		$('#corner').css('visibility', 'visible');
+   		$('#bottomScreen').css('visibility', 'visible');
+   		start();
+    	})
+    });	
+
+function start()
+{
+	numCanvases=0;
+	currCanvas = 0;
+	img = new Image();
+    img.src = 'NAOcanvas1.jpg';
+    actions = new Array;
+    text = new Array;
+    durations = new Array;
+    $("#nextButton").click(function(){doneClick();});
+	inventCanvas();
+}
+
+function inventCanvas()
+{
+	numCanvases+=1;
+	if(numCanvases!=1)
+		currCanvas +=1;
+	$("#nextButton").show();
+	$('body').append('<canvas id="myCanvas' + (numCanvases-1) + '" class="canvasClass" height="450" width="780"></canvas>')
+	$(document.getElementById("myCanvas"+(numCanvases-1))).css({height:"450px",marginLeft:"+=205px"});
+	canvas = document.getElementById("myCanvas" + (numCanvases-1));
+	if (canvas.getContext) {
+  		ctx = canvas.getContext('2d');
+		ctx.save();
+		initializeCanvas();
+	}
+ 	if (numCanvases!=0 && numCanvases != (currCanvas+1)) {
+ 		$(document.getElementById("myCanvas"+(numCanvases-1))).hide();
+ 		$(document.getElementById("myCanvas"+(currCanvas))).show();
+		inventMidCanvas();
+	}
+}
+
+function inventMidCanvas()
+{		
+	for (i=numCanvases;i>currCanvas;i--) {
+		actions[i] = actions[i-1];
+		text[i]= text[i-1];
+		if (document.getElementById("duration"))
+			durations[i] = durations[i-1];
+		$("#timelinetext"+i).html(
+			actions[i]+'</br> Say: "'+text[i]+'"</p>');
+		$("#timeline"+(currCanvas)).css('border','5px red inset');
+	}
+	actions[currCanvas] = "No Action";
+	text[currCanvas] = "";
+	durations[currCanvas] = "";
+	$("#timelinetext"+currCanvas).html("");
+	$("#timeline"+currCanvas).hide();
+	$("#timeline"+currCanvas).slideDown(200);
+}
+
+function initializeCanvas()
+{
+	ctx.drawImage(img, 0, 0);
+    $("#nextButton").css('visibility', 'visible');
+    $("#canvasAction").css('visibility', 'visible');
+    $("#canvasText").css('visibility', 'visible');
+    ctx.fillStyle="rgb(0, 210, 240)";
+    if (numCanvases < 10) {
+   		ctx.font = "bold 100px arial";
+   		ctx.fillText(numCanvases, 4, 90);
+   	}
+    else {
+   		ctx.font = "bold 70px arial";
+   		ctx.fillText(numCanvases, 3, 70);
+   	}
+   	getInfo();
+   	$("#scrollBox").append('<div id="timeline'+(numCanvases-1)+'" name = '+(numCanvases-1)+' class="timelineElement"><h4>Part '+numCanvases+'</h4><div id="timelinetext'+(numCanvases-1)+'"></div></div>');
+   	$("#timeline"+currCanvas).hide();
+	$("#timeline"+currCanvas).slideDown(200);
+   	if (numCanvases==(currCanvas+1))
+   		$("#timeline"+(numCanvases-1)).css('border','5px inset rgb(255, 0, 0)');
+   	else
+   		$("#timeline"+(numCanvases-1)).css('border','5px outset');
+   	$("#timeline"+(numCanvases-1)).mouseover(function(){
+   		if ($(this).css('border')!='5px inset rgb(255, 0, 0)')
+   			$(this).css('border','5px inset');
+   	});
+   	$("#timeline"+(numCanvases-1)).mouseout(function(){
+   		if ($(this).css('border')!='5px inset rgb(255, 0, 0)')
+   			$(this).css('border','5px #e2e2e2 outset');
+   	});
+   	$("#timeline"+(numCanvases-1)).click(function(){
+   		$("#timeline"+(currCanvas)).css('border','5px #e2e2e2 outset');
+   		$(this).css('border','5px red inset');
+   		if (!this.id[9]) {
+   			thisCanvas=this.id[8];
+   		}
+   		else {
+   			thisCanvas=(this.id[8]+this.id[9]);
+   		}
+   		if (currCanvas!=thisCanvas)
+   			editCanvas();
+   	});
+
+}
+
+function timelineHelper()
+{
+	if ($("#timelinetext"+currCanvas).html == "") {
+		actions[currCanvas] = "No Action";
+		text[currCanvas] = "";
+	}
+		
+}
+
+function editCanvas()
+{
+	if(!text[currCanvas] || text[currCanvas] == "")
+		getInfo();
+	$(document.getElementById("myCanvas"+currCanvas)).hide();
+	currCanvas = parseInt(thisCanvas);
+	$(document.getElementById("myCanvas"+currCanvas)).show();
+	document.getElementById("textarea").value = text[currCanvas];
+	document.getElementById("select").value = actions[currCanvas];
+	
+}
+function doneClick()
+{
+	doneClicked = true;
+	if ((document.getElementById("select").value != "No Action")||(document.getElementById("textarea").value != "")) {
+		$("#nextButton").hide();
+		$("#timeline"+currCanvas).css('border','5px #e2e2e2 outset');
+		getInfo();
+		document.getElementById("noAction").selected = true;
+		document.getElementById("textarea").value = "";
+		$(document.getElementById("duration")).css('visibility','hidden');
+    	if (currCanvas ==0) {
+			$(document.getElementById("myCanvas"+currCanvas)).slideUp();
+			img = new Image();
+    		img.src = 'NAOcanvas8.jpg';
+    	}
+		else
+			$(document.getElementById("myCanvas"+currCanvas)).slideUp();
+   		inventCanvas();
+   	}
+   	doneClicked=false;
+   	
+}
+
+function getInfo()
+{
+	if (!doneClicked) {
+	actions[currCanvas] = document.getElementById("select").value;
+	text[currCanvas]= document.getElementById("textarea").value;
+	if (document.getElementById("duration"))
+		durations[currCanvas] = document.getElementById("duration").value;
+	$("#timelinetext"+currCanvas).html(
+	actions[currCanvas]+'</br> Say: "'+text[currCanvas]+'"</p>');
+}
+}
+
+function addSelect()
+{
+getInfo();
+if (document.getElementById("walkF").selected || document.getElementById("walkB").selected) {
+	$("#canvasAction2").html(
+		'<select id = "duration"><option id="5">For five seconds</option><option id="10">For ten seconds</option><option id="15">For fifteen seconds</option><option id="20">For twenty seconds</option></select>');
+}
+else if (document.getElementById("noAction").selected || document.getElementById("sit").selected) {
+	if(document.getElementById("duration"))
+		$(document.getElementById("duration")).css('visibility','hidden');
+}
+if (document.getElementById("sit").selected) {
+	//img = new Image();
+    //img.src = 'NAOsitting.jpg';
+    //ctx.drawImage(img, 465, 350);
+    }
+}
+
+
+
+
+
+
+
+
+function sendInfo()
+{
+	alert("sending");
+	try {
+		request = new XMLHttpRequest();
+		request2 = new XMLHttpRequest();
+	}
+	catch(ex) {
+		alert("oops");
+	}
+	
+	/*for (i=0; i<1; i++) {
+	request2.open("GET", "http://130.64.94.118:3239/"+actions[i],true);
+	request2.send(null);
+	request.open("GET", "http://130.64.94.118:3239/say%20" + text[i],true);
+	request.send(null);
+	
+	}*/
+	request2.open("GET",'nao.local:9559/?eval=ALBehaviorManager.runBehavior("Stand%20Up")',true);
+	
+	
+	alert("done");
+// this is the story that I want to tell you about me standing up.
+}
+
+
+function delay(time) {
+  var d1 = new Date();
+  var d2 = new Date();
+  while (d2.valueOf() < d1.valueOf() + time) {
+    d2 = new Date();
+  }
+}
+
+</script>
+</head>
+<body>
+<img id="NAO" src="NAO_image2.jpg">
+<img id="yesButton" src="YesButton2.jpg">
+
+
+<p id="test"></p>
+<div id="canvasAction" ><select id = "select" onchange="addSelect()"><option id="noAction" name="">No Action</option><option id="sit" name="sit">Sit Down</option><option id="walkF">Walk Forwards</option><option id="walkB">Walk Backwards</option></select></div>
+<div id="canvasAction2" ></div>
+<div id="canvasText" ><textarea id = "textarea" rows="13" cols="23" onchange="getInfo()"></textarea></div>
+<div id="bottomScreen"></div>
+<div id="timelineLabel"><h1> TIMELINE </h1></div>
+<div id="scrollBox"></div>
+<div id="bottom"></div>
+<div id="corner"></div>
+
+<img id="nextButton" src="addNextPart2.jpg">
+
+</body>
+</html>
+
+
