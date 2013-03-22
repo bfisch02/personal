@@ -48,6 +48,13 @@ background-color: black;
 	visibility: hidden;
 }
 
+#finish{
+	position:absolute;
+	left: 860px;
+	top: 480px;
+	visibility: hidden;
+}
+
 canvas{
 	margin-left: 25px;
 	border: 2px solid #121212;

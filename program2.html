@@ -19,6 +19,7 @@ $(document).ready(function(){
    		$('#corner').css('visibility', 'visible');
    		$('#bottomScreen').css('visibility', 'visible');
    		$("#standing").css('visibility','visible');
+   		$("#finish").css('visibility','visible');
    		start();
     	})
     });	
@@ -35,6 +36,7 @@ function start()
     standing = new Array;
     standing[0] = true;
     $("#nextButton").click(function(){doneClick();});
+    $("#finish").click(function(){sendInfo();});
 	inventCanvas();
 }
 
@@ -273,7 +275,6 @@ function fixError()
 {
 	doneClick();
 	if (standing[currCanvas+1]) {
-		alert("hi...");
 		document.getElementById("sit").selected = true;
 		getInfo();
 		standing[currCanvas+1]=false;
@@ -288,26 +289,30 @@ function fixError()
 
 function sendInfo()
 {
-	alert("sending");
-	try {
-		request = new XMLHttpRequest();
-		request2 = new XMLHttpRequest();
+	if (confirm("Are you sure the story is over?")) {
+		alert("sending");
+		for(i = 0; i<numCanvases; i++) {
+			alert("Action: " + actions[i] + " Speech: " + text[i]);
+		}
+		try {
+			request = new XMLHttpRequest();
+			request2 = new XMLHttpRequest();
+		}
+		catch(ex) {
+			alert("oops");
+		}
 	}
-	catch(ex) {
-		alert("oops");
-	}
-	
 	/*for (i=0; i<1; i++) {
 	request2.open("GET", "http://130.64.94.118:3239/"+actions[i],true);
 	request2.send(null);
 	request.open("GET", "http://130.64.94.118:3239/say%20" + text[i],true);
 	request.send(null);
 	
-	}*/
+	}
 	request2.open("GET",'nao.local:9559/?eval=ALBehaviorManager.runBehavior("Stand%20Up")',true);
 	
 	
-	alert("done");
+	alert("done");*/
 // this is the story that I want to tell you about me standing up.
 }
 
@@ -340,6 +345,7 @@ function delay(time) {
 <img id="nextButton" src="addNextPart2.jpg">
 <img id="sitting" src="naoSitting2.jpg">
 <img id="standing" src="naoStanding.jpg">
+<img id="finish" src="finishStory.jpg">
 
 </body>
 </html>
