@@ -15,6 +15,20 @@ background-color: black;
 	size: 95;
 }
 
+#sitting{
+	position: absolute;
+	left: 810px;
+	top: 245px;
+	visibility: hidden;
+}
+
+#standing{
+	position: absolute;
+	left: 834px;
+	top: 230px;
+	visibility: hidden;
+}
+
 #wordBubble{
 	position: absolute;
 	left: 350px;
@@ -41,32 +55,42 @@ canvas{
 
 #canvasAction{
 	position: absolute;
-	left: 823px;
-	top: 205px;
+	left: 827px;
+	top: 175px;
 	text-align: center;
 	visibility: hidden;
+}
+
+
+
+#select{
+	text-align: center;
 }
 
 #canvasAction2{
 	position: absolute;
 	text-align: center;
-	left: 815px;
-	top: 232px;
+	left: 820px;
+	top: 202px;
 }
 
 #secondsText{
 	visibility: hidden;
 	position: absolute:
+	text-align: center;
 	
 }
 
 #canvasText{
 	position: absolute;
-	left: 550px;
-	top: 205px;
-	height: 300px;
+	left: 560px;
+	top: 175px;
 	font-size: 19px;
 	visibility: hidden;
+}
+
+#textarea{
+	font-size: 14px;
 }
 
 #bottom{
