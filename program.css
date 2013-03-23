@@ -48,11 +48,23 @@ background-color: black;
 	visibility: hidden;
 }
 
-#finish{
+#finish, #finish2{
 	position:absolute;
 	left: 860px;
 	top: 480px;
 	visibility: hidden;
+}
+
+#xButton{
+	position: absolute;
+	left: 190px;
+	top: 20px;
+}
+
+#xButton2{
+	position: absolute;
+	left: 188px;
+	top: 20px;
 }
 
 canvas{

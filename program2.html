@@ -12,20 +12,27 @@ doneClicked=false;
 $(document).ready(function(){
 	$("#yesButton").click(function(){
   		$(this).hide();
-   		$("#NAO").hide();
-   		$('#scrollBox').css('visibility','visible');
-   		$('#timelineLabel').css('visibility','visible');
-   		$('#bottom').css('visibility', 'visible');
-   		$('#corner').css('visibility', 'visible');
-   		$('#bottomScreen').css('visibility', 'visible');
-   		$("#standing").css('visibility','visible');
-   		$("#finish").css('visibility','visible');
    		start();
     	})
     });	
 
 function start()
 {
+	$("#NAO").hide();
+   	$('#scrollBox').css('visibility','visible');
+   	$('#timelineLabel').css('visibility','visible');
+   	$('#bottom').css('visibility', 'visible');
+   	$('#corner').css('visibility', 'visible');
+   	$('#bottomScreen').css('visibility', 'visible');
+   	$("#standing").css('visibility','visible');
+   	$("#sitting").css('visibility','hidden');
+   	$("#finish").css('visibility','visible');
+   	$("#finish2").css('visibility','visible');
+   	$("#finish2").hide();
+   	$("#xButton").css('visibility','visible');
+   	$("#xButton").hide();
+   	$("#xButton2").css('visibility','visible');
+   	$("#xButton2").hide();
 	numCanvases=0;
 	currCanvas = 0;
 	img = new Image();
@@ -36,6 +43,13 @@ function start()
     standing = new Array;
     standing[0] = true;
     $("#nextButton").click(function(){doneClick();});
+   /* $("#finish").mouseover(function(){
+    	$("#finish2").show();
+    	$("#finish2").mouseout(function() {
+    		$("#finish2").hide();
+    	});
+    	$("#finish2").click(function(){sendInfo();});
+    });*/
     $("#finish").click(function(){sendInfo();});
 	inventCanvas();
 }
@@ -109,7 +123,12 @@ function initializeCanvas()
    		ctx.fillText(numCanvases, 3, 70);
    	}
    	getInfo();
-   	$("#scrollBox").append('<div id="timeline'+(numCanvases-1)+'" name = '+(numCanvases-1)+' class="timelineElement"><h4>Part '+numCanvases+'</h4><div id="timelinetext'+(numCanvases-1)+'"></div></div>');
+   	addTimelineElement();
+}
+
+function addTimelineElement()
+{
+   	$("#scrollBox").append('<div id="timeline'+(numCanvases-1)+'" name = '+(numCanvases-1)+' class="timelineElement"><p><strong>Part '+numCanvases+'</strong><p><div id="timelinetext'+(numCanvases-1)+'"></div></div>');
    	$("#timeline"+currCanvas).hide();
 	$("#timeline"+currCanvas).slideDown(200);
    	if (numCanvases==(currCanvas+1))
@@ -119,10 +138,28 @@ function initializeCanvas()
    	$("#timeline"+(numCanvases-1)).mouseover(function(){
    		if ($(this).css('border')!='5px inset rgb(255, 0, 0)')
    			$(this).css('border','5px inset');
+   		else {
+   			$("#xButton").show();
+   			$("#xButton").css("top",(20+(currCanvas*140))+"px");
+   			$("#xButton").mouseover(function(){
+   				deleting=true;
+   				$("#xButton2").show();
+   				$("#xButton2").css("top",(17+(currCanvas*140))+"px");
+   				$("#xButton2").click(function(){
+   					deleteCanvas();
+   					deleting=false;
+   				});
+   				$("#xButton2").mouseout(function(){
+   					$("#xButton2").hide();
+   				});
+   			});
+   		}
    	});
    	$("#timeline"+(numCanvases-1)).mouseout(function(){
    		if ($(this).css('border')!='5px inset rgb(255, 0, 0)')
    			$(this).css('border','5px #e2e2e2 outset');
+   		else
+   			$("#xButton").hide();
    	});
    	$("#timeline"+(numCanvases-1)).click(function(){
    		$("#timeline"+(currCanvas)).css('border','5px #e2e2e2 outset');
@@ -137,15 +174,6 @@ function initializeCanvas()
    			editCanvas();
    	});
 
-}
-
-function timelineHelper()
-{
-	if ($("#timelinetext"+currCanvas).html == "") {
-		actions[currCanvas] = "No Action";
-		text[currCanvas] = "";
-	}
-		
 }
 
 function standingOptions()
@@ -172,6 +200,7 @@ function sittingOptions()
 		$("#select").append('<option id="lie" value = "Lie Down">Lie Down</option>');
 		$("#sitting").css('visibility','visible');
    		$("#standing").css('visibility','hidden');
+   		
 	}
 }
 
@@ -198,10 +227,37 @@ function editCanvas()
 	if (true)
 		$(document.getElementById("duration")).css('visibility','hidden');
 }
+
+function deleteCanvas()
+{
+	if (deleting) {
+		if (numCanvases==1)
+			alert("You can't delete the only part to the story!");
+		else if (actions[currCanvas] == "Stand Up" || actions[currCanvas] == "Sit Down")
+			alert("You can't delete this part without adding a new part or deleting Part " + (currCanvas+1));
+		else {
+			alert("This will do something soon...");
+			/*numCanvases--;
+			for (i=currCanvas;i<numCanvases;i++) {
+				actions[i] = actions[i+1];
+				text[i]= text[i+1];
+				standing[i] = standing[i+1];
+				if (document.getElementById("duration"))
+					durations[i] = durations[i+1];
+				$("#timelinetext"+i).html(
+					actions[i]+'</br> Say: "'+text[i]+'"</p>');
+				$("#timeline"+(currCanvas)).css('border','5px red inset');
+			}
+			$("#timeline"+currCanvas).slideUp(200);*/
+		}
+		deleting=false;
+	}
+}
+
 function doneClick()
 {
 	doneClicked = true;
-	if ((document.getElementById("select").value != "No Action")||(document.getElementById("textarea").value != "")) {
+	if ((document.getElementById("select").value != "No Action")||(document.getElementById("textarea").value != "") || currCanvas!=numCanvases-1) {
 		$("#nextButton").hide();
 		$("#timeline"+currCanvas).css('border','5px #e2e2e2 outset');
 		getInfo();
@@ -245,7 +301,7 @@ function addSelect()
 	*/
 	if (document.getElementById("select").value == "Sit Down" || (document.getElementById("select").value != "Stand Up" && !document.getElementById("sit"))) {
 		if (currCanvas!=numCanvases-1 && standing[currCanvas+1]) {
-			if (confirm('If you choose this option, I have to make another part of the story so I can stand up. Would you still like to continue?')) {
+			if (confirm('I am standing up in Part ' + (currCanvas+2) + '. If you press "Continue", I will add a new part to the story so that I can stand up.')) {
 				getInfo();
 				fixError();
 			}
@@ -257,7 +313,7 @@ function addSelect()
    	}
    	else if (document.getElementById("select").value == "Stand Up" || (document.getElementById("select").value != "Sit Down" && !document.getElementById("stand"))) {
 		if (currCanvas!=numCanvases-1 && !standing[currCanvas+1]) {
-			if (confirm('If you choose this option, I have to make another part of the story so I can sit down. Would you still like to continue?')) {
+			if (confirm('I am sitting down in Part ' + (currCanvas+2) + '. If you press "Continue", I will add a new part to the story so that I can sit down.')) {
 				getInfo();
 				fixError();
 			}
@@ -282,7 +338,6 @@ function fixError()
 	else {
 		document.getElementById("stand").selected = true;
 		getInfo();
-		alert(standing[currCanvas+1]);
 		standing[currCanvas+1]=true;
 	}	
 }
@@ -338,7 +393,7 @@ function delay(time) {
 <div id="canvasText" ><textarea id = "textarea" rows="13" cols="19" onchange="getInfo()"></textarea></div>
 <div id="bottomScreen"></div>
 <div id="timelineLabel"><h1> TIMELINE </h1></div>
-<div id="scrollBox"></div>
+<div id="scrollBox"><img id="xButton" src="xButton.jpg"><img id="xButton2" src="xButton2.jpg"></div>
 <div id="bottom"></div>
 <div id="corner"></div>
 
@@ -346,6 +401,7 @@ function delay(time) {
 <img id="sitting" src="naoSitting2.jpg">
 <img id="standing" src="naoStanding.jpg">
 <img id="finish" src="finishStory.jpg">
+<img id="finish2" src="finishButton2.jpg">
 
 </body>
 </html>
